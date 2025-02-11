@@ -1,7 +1,7 @@
 <template>
   <div id="todoList">
-    <ul v-for="item in filteredToDoItems" :key="item.id">
-      <li class="todo">
+    <ul v-for="item in toDoItems" :key="item.id">
+      <li v-if="showAll || (!showAll && !item.completed)" class="todo">
         <label>
           <input
             type="checkbox"
@@ -9,7 +9,7 @@
             v-model="item.completed"
             @click="handleToDoItemComplete(item)"
           />
-          <span :class="{ completed: item.completed }"> {{ item.name }} </span>
+          <span :class="{ completed: item.completed }">{{ item.name }}</span>
           <i
             class="material-icons color-blue-grey"
             @click="handleToDoItemDelete($event, item.id)"
@@ -21,22 +21,22 @@
     <div>
       <Button
         type="button"
-        @click="handleTogleFilter"
-        :class="{ disabled: filteredToDoItems.length === 0 || isAllCompleted }"
+        @click="handleToggleFilter"
+        :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
       >
         {{ showAll ? "Show Incomplete" : "Show All" }}
       </Button>
       <Button
         type="button"
         @click="handleAllDone"
-        :class="{ disabled: filteredToDoItems.length === 0 || isAllCompleted }"
+        :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
       >
         Mark all as complete
       </Button>
       <Button
         type="button"
         @click="handleEmpty"
-        :class="{ disabled: filteredToDoItems.length === 0 }"
+        :class="{ disabled: toDoItems.length === 0 }"
       >
         Reset Todo List
       </Button>
@@ -48,9 +48,8 @@
 import type { ToDoItemInterface } from "~/models/ToDoItems/ToDoItem.interface";
 
 defineProps<{
-  ToDoItems: ToDoItemInterface[];
-  filteredToDoItems: ToDoItemInterface[];
-  isAllCompleted: Boolean;
+  toDoItems: ToDoItemInterface[];
+  areAllCompleted: Boolean;
   showAll: Boolean;
 }>();
 
@@ -60,7 +59,6 @@ const emit = defineEmits<{
   (e: "onHandleAllDone"): void;
   (e: "onHandleEmpty"): void;
   (e: "onToggleFilterBtn"): void;
-  (e: "onFilteredToDoItems"): void;
 }>();
 
 // function to comlete to do item
@@ -70,12 +68,12 @@ const handleToDoItemComplete = (item: ToDoItemInterface) => {
 
 const handleToDoItemDelete = (event: any, id: number) => {
   event.preventDefault();
+
   emit("onDeleteTodos", id);
 };
 
-const handleTogleFilter = () => {
+const handleToggleFilter = () => {
   emit("onToggleFilterBtn");
-  emit("onFilteredToDoItems");
 };
 
 const handleAllDone = () => {

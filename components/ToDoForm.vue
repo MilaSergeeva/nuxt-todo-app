@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 const addTodo = ref("");
-
 const emit = defineEmits<{ (e: "onAddTodos", todo: string): void }>();
 
 const addTodos = () => {

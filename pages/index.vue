@@ -2,15 +2,14 @@
   <div>
     <ToDoForm @onAddTodos="addToDoHandler"></ToDoForm>
     <ToDoItemsList
-      :filteredToDoItems="filteredToDoItems"
-      :is-all-completed="areAllCompleted"
+      :toDoItems="toDoItems"
       :showAll="showAll"
+      :areAllCompleted="areAllCompleted"
       @toggleToDo="toggleToDoItem"
       @onDeleteTodos="removeTodoHandler"
       @onToggleFilterBtn="toggleFilter"
       @onHandleAllDone="completeAllTodos"
       @onHandleEmpty="deleteAllTodos"
-      @onFilteredToDoItems="filteredToDoItems"
     ></ToDoItemsList>
   </div>
 </template>
@@ -19,9 +18,8 @@
 import { useTodos } from "../composables/useTodos";
 
 const {
-  ToDoItems,
+  toDoItems,
   showAll,
-  filteredToDoItems,
   addToDo,
   toggleToDo,
   removeToDo,
