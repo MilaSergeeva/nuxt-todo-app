@@ -7,12 +7,12 @@
             type="checkbox"
             class="color-blue-grey"
             v-model="item.completed"
-            @click="handleToDoItemComplete(item)"
+            @click="onTodoItemComplete(item)"
           />
           <span :class="{ completed: item.completed }">{{ item.name }}</span>
           <i
             class="material-icons color-blue-grey"
-            @click="handleToDoItemDelete($event, item.id)"
+            @click="onTodoItemDelete($event, item.id)"
             >delete</i
           >
         </label>
@@ -21,21 +21,21 @@
     <div>
       <Button
         type="button"
-        @click="handleToggleFilter"
+        @click="onToggleFilter"
         :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
       >
         {{ showAll ? "Show Incomplete" : "Show All" }}
       </Button>
       <Button
         type="button"
-        @click="handleAllDone"
+        @click="onMarkAllCompleted"
         :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
       >
         Mark all as complete
       </Button>
       <Button
         type="button"
-        @click="handleEmpty"
+        @click="onResetTodoList"
         :class="{ disabled: toDoItems.length === 0 }"
       >
         Reset Todo List
@@ -45,42 +45,46 @@
 </template>
 
 <script setup lang="ts">
-import type { ToDoItemInterface } from "~/models/ToDoItems/ToDoItem.interface";
+import type { TodoItemInterface } from "~/models/TodoItems/TodoItem.interface";
 
 defineProps<{
-  toDoItems: ToDoItemInterface[];
-  areAllCompleted: Boolean;
-  showAll: Boolean;
+  toDoItems: TodoItemInterface[];
+  showAll: boolean;
+  areAllCompleted: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "toggleToDo", id: number): void;
-  (e: "onDeleteTodos", id: number): void;
-  (e: "onHandleAllDone"): void;
-  (e: "onHandleEmpty"): void;
-  (e: "onToggleFilterBtn"): void;
+  (e: "deleteTodo", id: number): void;
+  (e: "toggleFilterBtn"): void;
+  (e: "handleAllDone"): void;
+  (e: "handleEmpty"): void;
 }>();
 
 // function to comlete to do item
-const handleToDoItemComplete = (item: ToDoItemInterface) => {
+const onTodoItemComplete = (item: TodoItemInterface) => {
   emit("toggleToDo", item.id);
 };
 
-const handleToDoItemDelete = (event: any, id: number) => {
+// function to delete to do item
+const onTodoItemDelete = (event: MouseEvent, id: number) => {
   event.preventDefault();
 
-  emit("onDeleteTodos", id);
+  emit("deleteTodo", id);
 };
 
-const handleToggleFilter = () => {
-  emit("onToggleFilterBtn");
+// function to toggle the filter
+const onToggleFilter = () => {
+  emit("toggleFilterBtn");
 };
 
-const handleAllDone = () => {
-  emit("onHandleAllDone");
+// function to mark all todo items as completed
+const onMarkAllCompleted = () => {
+  emit("handleAllDone");
 };
 
-const handleEmpty = () => {
-  emit("onHandleEmpty");
+// function to reset the todo list
+const onResetTodoList = () => {
+  emit("handleEmpty");
 };
 </script>

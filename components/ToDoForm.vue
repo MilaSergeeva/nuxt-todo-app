@@ -1,7 +1,7 @@
 <template>
   <div id="formContainer">
     <h1>ToDo List</h1>
-    <form @submit.prevent="addTodos()">
+    <form @submit.prevent="addTodoHandler()">
       <label for="name" class="active">What to do?</label>
       <input v-model="addTodo" type="text" id="name" placeholder="new todo" />
       <Button type="submit"
@@ -12,14 +12,16 @@
 </template>
 
 <script setup lang="ts">
-const addTodo = ref("");
-const emit = defineEmits<{ (e: "onAddTodos", todo: string): void }>();
+const addTodo = ref<string>("");
+const emit = defineEmits<{
+  (e: "addTodo", todo: string): void;
+}>();
 
-const addTodos = () => {
+const addTodoHandler = () => {
   if (!addTodo.value.trim()) return;
-  emit("onAddTodos", addTodo.value);
 
-  console.log(addTodo.value);
+  emit("addTodo", addTodo.value);
+
   addTodo.value = "";
 };
 </script>

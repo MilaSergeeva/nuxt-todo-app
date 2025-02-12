@@ -1,24 +1,28 @@
 import { ref, computed, reactive, watch } from "vue";
-import type { ToDoItemInterface } from "../models/ToDoItems/ToDoItem.interface";
+import type { TodoItemInterface } from "~/models/TodoItems/TodoItem.interface";
 
 export const useTodos = () => {
-  const toDoItems: ToDoItemInterface[] = reactive([]);
+  const todos: TodoItemInterface[] = reactive([]);
   const showAll = ref(true);
 
   // Load saved Todos from localStorage
-  const loadTodos = () => {
+
+  const loadTodos = (): void => {
     const savedTodos = localStorage.getItem("toDoItems");
 
     if (savedTodos) {
-      const parsedTodos = JSON.parse(savedTodos);
-
-      parsedTodos.forEach((todo: ToDoItemInterface) => toDoItems.push(todo));
+      try {
+        const parsedTodos: TodoItemInterface[] = JSON.parse(savedTodos);
+        todos.push(...parsedTodos);
+      } catch (error) {
+        console.error("Error parsing todos from localStorage:", error);
+      }
     }
   };
 
   // Save Todos to localStorage whenever they change
   watch(
-    toDoItems,
+    todos,
     (newTodos) => {
       localStorage.setItem("toDoItems", JSON.stringify(newTodos));
     },
@@ -26,66 +30,63 @@ export const useTodos = () => {
   );
 
   // Add a new Todo
-  const addToDo = (name: string) => {
-    const newTodo: ToDoItemInterface = {
-      name,
+  const addTodo = (name: string): void => {
+    const newTodo: TodoItemInterface = {
       id: Date.now(),
+      name,
       completed: false,
     };
 
-    toDoItems.unshift(newTodo);
+    todos.unshift(newTodo);
   };
 
   // Toggle a Todo's completion state
-  const toggleToDo = (id: number) => {
-    const todo = toDoItems.find((todo) => todo.id === id);
+  const toggleTodo = (id: number): void => {
+    const todo = todos.find((todo) => todo.id === id);
 
     if (todo) {
       todo.completed = !todo.completed;
-      sortToDoItems();
+      sortTodos();
     }
   };
 
   // Sort Todos by completed status
-  const sortToDoItems = () => {
-    toDoItems.sort((a, b) => Number(a.completed) - Number(b.completed));
+  const sortTodos = (): void => {
+    todos.sort((a, b) => Number(a.completed) - Number(b.completed));
   };
 
   // Toggle the filter for showing all or incomplete Todos
-  const toggleFilter = () => {
+  const toggleFilter = (): void => {
     showAll.value = !showAll.value;
   };
 
   // Remove a Todo by ID
-  const removeToDo = (id: number) => {
-    const shouldRemove = window.confirm("Are you sure?");
+  const removeTodo = (id: number): void => {
+    const index = todos.findIndex((todo) => todo.id === id);
 
-    if (shouldRemove) {
-      toDoItems.splice(
-        toDoItems.findIndex((todo) => todo.id === id),
-        1
-      );
+    if (index !== -1) {
+      todos.splice(index, 1);
     }
   };
 
   // Mark all Todos as complete
-  const completeAllTodos = () => {
-    toDoItems.forEach((todo) => (todo.completed = true));
+  const markAllTodosAsCompleted = (): void => {
+    todos.forEach((todo) => (todo.completed = true));
   };
 
   // Remove all Todos
-  const deleteAllTodos = () => {
+  const clearTodos = (): void => {
     const shouldRemove = window.confirm("Are you sure?");
 
     if (shouldRemove) {
-      toDoItems.splice(0, toDoItems.length);
+      todos.splice(0, todos.length);
     }
   };
 
   // Check if all Todos are completed
-  const areAllCompleted = computed(() => {
-    return toDoItems.every((todo) => todo.completed);
-  });
+  const areAllCompleted = computed<boolean>(() =>
+    todos.every((todo) => todo.completed)
+  );
 
   watch(areAllCompleted, (val) => {
     if (val) {
@@ -94,14 +95,14 @@ export const useTodos = () => {
   });
 
   return {
-    toDoItems,
+    todos,
     showAll,
-    addToDo,
-    toggleToDo,
-    removeToDo,
-    completeAllTodos,
-    deleteAllTodos,
     areAllCompleted,
+    addTodo,
+    toggleTodo,
+    removeTodo,
+    markAllTodosAsCompleted,
+    clearTodos,
     toggleFilter,
     loadTodos,
   };

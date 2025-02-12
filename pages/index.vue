@@ -1,51 +1,52 @@
 <template>
   <div>
-    <ToDoForm @onAddTodos="addToDoHandler"></ToDoForm>
-    <ToDoItemsList
-      :toDoItems="toDoItems"
-      :showAll="showAll"
-      :areAllCompleted="areAllCompleted"
-      @toggleToDo="toggleToDoItem"
-      @onDeleteTodos="removeTodoHandler"
-      @onToggleFilterBtn="toggleFilter"
-      @onHandleAllDone="completeAllTodos"
-      @onHandleEmpty="deleteAllTodos"
-    ></ToDoItemsList>
+    <TodoForm @add-todo="handleAddTodo"></TodoForm>
+    <TodoItemsList
+      :to-do-items="todos"
+      :show-all="showAll"
+      :are-all-completed="areAllCompleted"
+      @toggle-to-do="handleToggleTodo"
+      @delete-todo="handleRemoveTodo"
+      @toggle-filter-btn="toggleFilter"
+      @handle-all-done="markAllTodosAsCompleted"
+      @handle-empty="clearTodos"
+    ></TodoItemsList>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useTodos } from "../composables/useTodos";
+import { useTodos } from "@/composables/useTodos";
+import type { UseTodosReturn } from "~/models/TodoItems/TodoItem.interface";
 
 const {
-  toDoItems,
+  todos,
   showAll,
-  addToDo,
-  toggleToDo,
-  removeToDo,
-  completeAllTodos,
-  deleteAllTodos,
   areAllCompleted,
+  addTodo,
+  toggleTodo,
+  removeTodo,
+  markAllTodosAsCompleted,
+  clearTodos,
   toggleFilter,
   loadTodos,
-} = useTodos();
+} = useTodos() as UseTodosReturn;
 
 onMounted(() => {
   loadTodos();
 });
 
 // Handler to add a new Todo
-const addToDoHandler = (name: string) => {
-  addToDo(name);
+const handleAddTodo = (name: string): void => {
+  addTodo(name);
 };
 
 // Handler to toggle a Todo's completion state
-const toggleToDoItem = (id: number) => {
-  toggleToDo(id);
+const handleToggleTodo = (id: number): void => {
+  toggleTodo(id);
 };
 
 // Handler to delete a Todo
-const removeTodoHandler = (id: number) => {
-  removeToDo(id);
+const handleRemoveTodo = (id: number): void => {
+  removeTodo(id);
 };
 </script>
