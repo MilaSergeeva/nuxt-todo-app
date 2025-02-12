@@ -7,6 +7,8 @@ export default defineNuxtConfig({
 
   plugins: [{ src: "~/plugins/materialize.js", mode: "client" }],
 
+  components: true,
+
   app: {
     head: {
       title: "Todo List",

@@ -1,7 +1,12 @@
 <template>
   <div id="todoList">
-    <ul v-for="item in toDoItems" :key="item.id">
-      <li v-if="showAll || (!showAll && !item.completed)" class="todo">
+    <TransitionGroup name="todo-fade" tag="ul">
+      <li
+        v-for="item in toDoItems"
+        :key="item.id"
+        v-if="showAll || (!showAll && !item.completed)"
+        class="todo"
+      >
         <label>
           <input
             type="checkbox"
@@ -17,26 +22,32 @@
           >
         </label>
       </li>
-    </ul>
+    </TransitionGroup>
     <div>
       <Button
         type="button"
         @click="onToggleFilter"
-        :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
+        :class="[
+          'btn-min-width',
+          { disabled: toDoItems.length === 0 || areAllCompleted },
+        ]"
       >
         {{ showAll ? "Show Incomplete" : "Show All" }}
       </Button>
       <Button
         type="button"
         @click="onMarkAllCompleted"
-        :class="{ disabled: toDoItems.length === 0 || areAllCompleted }"
+        :class="[
+          'btn-min-width',
+          { disabled: toDoItems.length === 0 || areAllCompleted },
+        ]"
       >
         Mark all as complete
       </Button>
       <Button
         type="button"
         @click="onResetTodoList"
-        :class="{ disabled: toDoItems.length === 0 }"
+        :class="['btn-min-width', { disabled: toDoItems.length === 0 }]"
       >
         Reset Todo List
       </Button>
@@ -88,3 +99,23 @@ const onResetTodoList = () => {
   emit("handleEmpty");
 };
 </script>
+
+<style scoped>
+/* Добавим анимацию для плавного появления и исчезновения */
+.todo-fade-enter-active,
+.todo-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.todo-fade-enter-from,
+.todo-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.todo-fade-enter-to,
+.todo-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>

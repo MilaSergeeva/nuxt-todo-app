@@ -1,5 +1,6 @@
 <template>
   <div id="app">
-    <NuxtPage />
+    <BackgroundContainer></BackgroundContainer>
+    <NuxtPage class="container" />
   </div>
 </template>
